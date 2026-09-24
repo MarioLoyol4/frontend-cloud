@@ -1,0 +1,289 @@
+.apoderado-page {
+    min-height: 100vh;
+    background-color: #f1f3f4;
+}
+
+.apoderado-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.apoderado-header {
+    margin-bottom: 28px;
+}
+
+.apoderado-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #202124;
+    margin-bottom: 6px;
+}
+
+.apoderado-header p {
+    color: #5f6368;
+    font-size: 0.95rem;
+}
+
+/* Selector de estudiante */
+.apoderado-selector {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.apoderado-selector span {
+    font-weight: 600;
+    color: #202124;
+}
+
+.apoderado-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.apoderado-tab {
+    padding: 8px 20px;
+    border: 1.5px solid #dadce0;
+    border-radius: 20px;
+    background: white;
+    color: #5f6368;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.apoderado-tab.activo {
+    background-color: #7896b0;
+    border-color: #7896b0;
+    color: white;
+    font-weight: 600;
+}
+
+.apoderado-tab:hover:not(.activo) {
+    border-color: #7896b0;
+    color: #7896b0;
+}
+
+/* Cargando */
+.apoderado-cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 60px;
+    color: #5f6368;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #dadce0;
+    border-top-color: #7896b0;
+    border-radius: 50%;
+    animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+/* Error */
+.apoderado-error {
+    background-color: #fce8e6;
+    color: #c0392b;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #c0392b;
+    margin-bottom: 24px;
+}
+
+/* Grid de cards */
+.apoderado-contenido {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.apoderado-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.apoderado-card-full {
+    grid-column: 1 / -1;
+}
+
+.apoderado-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f3f4;
+    background-color: #f8f9fa;
+}
+
+.apoderado-card-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a6b6b;
+}
+
+.apoderado-card-body {
+    padding: 16px 20px;
+    overflow-x: auto;
+}
+
+/* Tabla */
+.apoderado-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.apoderado-tabla th {
+    text-align: left;
+    padding: 10px 12px;
+    background-color: #f8f9fa;
+    color: #5f6368;
+    font-weight: 600;
+    border-bottom: 1px solid #dadce0;
+}
+
+.apoderado-tabla td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f3f4;
+    color: #202124;
+}
+
+.apoderado-tabla tr:last-child td {
+    border-bottom: none;
+}
+
+/* Notas */
+.nota-verde {
+    color: #1e8e3e;
+    font-weight: 700;
+}
+
+.nota-roja {
+    color: #c0392b;
+    font-weight: 700;
+}
+
+.notas-por-asignatura {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.asignatura-notas-card {
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.asignatura-notas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.asignatura-notas-header h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #202124;
+}
+
+.apoderado-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* Estados asistencia */
+.estado {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.estado-presente { background: #e6f4ea; color: #1e8e3e; }
+.estado-ausente { background: #fce8e6; color: #c0392b; }
+.estado-atrasado { background: #fef7e0; color: #f29900; }
+
+/* Tipos anotación */
+.tipo {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.tipo-positiva { background: #e6f4ea; color: #1e8e3e; }
+.tipo-negativa { background: #fce8e6; color: #c0392b; }
+
+/* Comunicados */
+.apoderado-comunicados {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.comunicado-item {
+    padding: 16px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    border-left: 4px solid #7896b0;
+}
+
+.comunicado-item h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 6px;
+}
+
+.comunicado-item p {
+    font-size: 0.875rem;
+    color: #5f6368;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.comunicado-fecha {
+    font-size: 0.75rem;
+    color: #aab0b7;
+}
+
+/* Vacío / No disponible */
+.apoderado-vacio {
+    color: #aab0b7;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 24px 0;
+}
+
+.apoderado-no-disponible {
+    color: #f29900;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 24px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .apoderado-contenido {
+        grid-template-columns: 1fr;
+    }
+    .apoderado-card-full {
+        grid-column: 1;
+    }
+}

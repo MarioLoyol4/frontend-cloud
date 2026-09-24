@@ -1,0 +1,135 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #7896b0;
+    padding: 0 32px;
+    height: 64px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Izquierda — logo y nombre */
+.navbar-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.navbar-logo {
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    color: #1a6b6b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.navbar-logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+}
+
+.navbar-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-colegio {
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.navbar-subtitulo {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.75rem;
+}
+
+/* Derecha — usuario y logout */
+.navbar-derecha {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbar-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-avatar {
+    border-radius: 50%;
+    background-color: #c0392b;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.navbar-avatar img {
+    width: 40xp;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.navbar-usuario-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-nombre {
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.navbar-rol {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.75rem;
+}
+
+.navbar-logout {
+    background-color: transparent;
+    color: white;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.navbar-logout:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+    }
+
+    .navbar-subtitulo,
+    .navbar-usuario-info {
+        display: none;
+    }
+
+    .navbar-logout {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}

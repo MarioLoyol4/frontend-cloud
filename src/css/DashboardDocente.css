@@ -1,0 +1,353 @@
+.docente-page {
+    min-height: 100vh;
+    background-color: #f1f3f4;
+}
+
+.docente-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.docente-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.docente-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #202124;
+    margin-bottom: 6px;
+}
+
+.docente-header p {
+    color: #5f6368;
+    font-size: 0.95rem;
+}
+
+/* Buscador de curso */
+.docente-buscar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.docente-buscar label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #202124;
+}
+
+.docente-buscar input {
+    width: 80px;
+    padding: 8px 12px;
+    border: 1.5px solid #dadce0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.docente-buscar input:focus {
+    border-color: #1a6b6b;
+}
+
+.docente-buscar button {
+    padding: 8px 16px;
+    background-color: #7896b0;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.docente-buscar button:hover {
+    background-color: #145555;
+}
+
+/* Cargando */
+.docente-cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 60px;
+    color: #5f6368;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #dadce0;
+    border-top-color: #1a6b6b;
+    border-radius: 50%;
+    animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+/* Error */
+.docente-error {
+    background-color: #fce8e6;
+    color: #c0392b;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #c0392b;
+    margin-bottom: 24px;
+}
+
+/* Grid */
+.docente-contenido {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.docente-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.docente-card-grande {
+    grid-row: span 2;
+}
+
+.docente-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f3f4;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.docente-card-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a6b6b;
+}
+
+.docente-badge {
+    background-color: #e8f5e9;
+    color: #1a6b6b;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.docente-card-body {
+    padding: 16px 20px;
+    overflow-x: auto;
+}
+
+.docente-lista-controles {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.docente-lista-controles label,
+.docente-formulario label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #202124;
+}
+
+.docente-lista-controles input,
+.docente-formulario input,
+.docente-formulario select,
+.docente-formulario textarea,
+.docente-tabla select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #dadce0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    outline: none;
+    background: white;
+}
+
+.docente-lista-controles input {
+    width: 170px;
+}
+
+.docente-lista-controles input:focus,
+.docente-formulario input:focus,
+.docente-formulario select:focus,
+.docente-formulario textarea:focus,
+.docente-tabla select:focus {
+    border-color: #1a6b6b;
+}
+
+.docente-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.docente-formulario textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.docente-form-btn,
+.docente-accion-btn {
+    padding: 10px 14px;
+    background-color: #7896b0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.docente-form-btn:hover,
+.docente-accion-btn:hover {
+    background-color: #145555;
+}
+
+.docente-form-btn:disabled,
+.docente-accion-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.docente-accion-btn {
+    width: 100%;
+}
+
+.docente-separador {
+    height: 1px;
+    background: #f1f3f4;
+    margin: 18px 0;
+}
+
+.docente-mensaje {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.docente-mensaje-ok {
+    background-color: #e8f5e9;
+    color: #1a6b6b;
+    border-left: 4px solid #1a6b6b;
+}
+
+.docente-mensaje-error {
+    background-color: #fce8e6;
+    color: #c0392b;
+    border-left: 4px solid #c0392b;
+}
+
+/* Tabla */
+.docente-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.docente-tabla th {
+    text-align: left;
+    padding: 10px 12px;
+    background-color: #f8f9fa;
+    color: #5f6368;
+    font-weight: 600;
+    border-bottom: 1px solid #dadce0;
+}
+
+.docente-tabla td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f3f4;
+    color: #202124;
+    vertical-align: top;
+}
+
+.docente-tabla tr:last-child td {
+    border-bottom: none;
+}
+
+/* Comunicados */
+.docente-comunicados {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.comunicado-item {
+    padding: 16px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    border-left: 4px solid #7896b0;
+}
+
+.comunicado-item h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 6px;
+}
+
+.comunicado-item p {
+    font-size: 0.875rem;
+    color: #5f6368;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.comunicado-fecha {
+    font-size: 0.75rem;
+    color: #aab0b7;
+}
+
+/* Vacío */
+.docente-vacio {
+    color: #aab0b7;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 24px 0;
+}
+
+.docente-no-disponible {
+    color: #70bbc0;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 24px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .docente-contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .docente-card-grande {
+        grid-row: span 1;
+    }
+
+    .docente-header {
+        flex-direction: column;
+    }
+}
