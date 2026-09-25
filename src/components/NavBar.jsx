@@ -1,14 +1,14 @@
-import { useNavigate } from "react-router-dom";
-import {cerrarSesion, obtenerRol} from "../services/api";
+import { useMsal } from "@azure/msal-react";
+import { cerrarSesion, obtenerRol } from "../services/api";
 import '../css/NavBar.css';
 
-function NavBar({nombreUsuario}) {
-    const navigate = useNavigate();
+function NavBar() {
+    const { accounts } = useMsal();
+    const nombreUsuario = accounts[0]?.name || accounts[0]?.username || "Usuario";
     const rol = obtenerRol();
 
-    const handleLogout = () => {
-        cerrarSesion();
-        navigate("/login");
+    const handleLogout = async () => {
+        await cerrarSesion();
     };
 
     const etiquetaRol = {
@@ -27,19 +27,14 @@ function NavBar({nombreUsuario}) {
                     <span className="navbar-subtitulo">Portal digital</span>
                 </div>
             </div>
-
             <div className="navbar-derecha">
                 <div className="navbar-usuario">
                     <div className="navbar-avatar">
                         <img src="../../Imagen/avatar.jpg" alt="Avatar" />
                     </div>
                     <div className="navbar-usuario-info">
-                        <span className="navbar-nombre">
-                            {nombreUsuario || "Usuario"}
-                        </span>
-                        <span className="navbar-rol">
-                            {etiquetaRol[rol] || rol}
-                        </span>
+                        <span className="navbar-nombre">{nombreUsuario}</span>
+                        <span className="navbar-rol">{etiquetaRol[rol] || rol}</span>
                     </div>
                 </div>
                 <button className="navbar-logout" onClick={handleLogout}>

@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { obtenerRol } from "./services/api";
+import { useIsAuthenticated } from "@azure/msal-react";
+import { obtenerRol, sincronizarPerfil } from "./services/api";
 import Login from "./pages/Login";
 import DashboardAdmin from "./pages/DashboardAdmin";
 import DashbboardDocente from "./pages/DashboardDocente";
@@ -17,39 +19,67 @@ function RedirigirSegunRol() {
     return <Navigate to="/login" />;
 }
 
+function AuthGate({ children }) {
+    const isAuthenticated = useIsAuthenticated();
+    const [listo, setListo] = useState(false);
+
+    useEffect(() => {
+        let activo = true;
+        const preparar = async () => {
+            if (isAuthenticated && !obtenerRol()) {
+                try {
+                    await sincronizarPerfil();
+                } catch (error) {
+                    console.error("No se pudo sincronizar el perfil con el BFF", error);
+                }
+            }
+            if (activo) setListo(true);
+        };
+        preparar();
+        return () => { activo = false; };
+    }, [isAuthenticated]);
+
+    if (isAuthenticated && !listo) {
+        return <div className="cargando-sesion">Cargando sesión...</div>;
+    }
+    return children;
+}
+
 function App() {
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<RedirigirSegunRol />} />
+            <AuthGate>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<RedirigirSegunRol />} />
 
-                <Route path="/admin" element={
-                    <ProtectedRoute roles={['ADMIN']}>
-                        <DashboardAdmin />
-                    </ProtectedRoute>
-                } />
+                    <Route path="/admin" element={
+                        <ProtectedRoute roles={['ADMIN']}>
+                            <DashboardAdmin />
+                        </ProtectedRoute>
+                    } />
 
-                <Route path="/docente" element={
-                    <ProtectedRoute roles={['DOCENTE']}>
-                        <DashbboardDocente />
-                    </ProtectedRoute>
-                } />
+                    <Route path="/docente" element={
+                        <ProtectedRoute roles={['DOCENTE']}>
+                            <DashbboardDocente />
+                        </ProtectedRoute>
+                    } />
 
-                <Route path="/estudiante" element={
-                    <ProtectedRoute roles={['ESTUDIANTE']}>
-                        <DashboardEstudiante />
-                    </ProtectedRoute>
-                } />
+                    <Route path="/estudiante" element={
+                        <ProtectedRoute roles={['ESTUDIANTE']}>
+                            <DashboardEstudiante />
+                        </ProtectedRoute>
+                    } />
 
-                <Route path="/apoderado" element={
-                    <ProtectedRoute roles={['APODERADO']}>
-                        <DashboardApoderado />
-                    </ProtectedRoute>
-                } />
+                    <Route path="/apoderado" element={
+                        <ProtectedRoute roles={['APODERADO']}>
+                            <DashboardApoderado />
+                        </ProtectedRoute>
+                    } />
 
-                <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
+                    <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+            </AuthGate>
         </BrowserRouter>
     );
 }

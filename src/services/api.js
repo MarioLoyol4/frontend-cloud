@@ -1,68 +1,86 @@
+import { msalInstance } from "../msalInstance";
+import { loginRequest } from "../authConfig";
+
 const BFF_URL = 'http://localhost:8080';
 
-export const guardarToken = (token, rol) => {
-    sessionStorage.setItem('token', token);
-    sessionStorage.setItem('rol', rol);
+export const obtenerRol = () => sessionStorage.getItem('rol');
+export const obtenerReferenciaId = () => sessionStorage.getItem('referenciaId');
+export const obtenerEstudiantesACargo = () => {
+    const guardado = sessionStorage.getItem('estudiantesACargo');
+    return guardado ? JSON.parse(guardado) : [];
 };
 
-export const obtenerToken = () => {
-    return sessionStorage.getItem('token');
+export const obtenerAccessToken = async () => {
+    const account = msalInstance.getActiveAccount();
+    if (!account) {
+        throw new Error("No hay una sesión activa de Microsoft Entra ID");
+    }
+    try {
+        const respuesta = await msalInstance.acquireTokenSilent({ ...loginRequest, account });
+        return respuesta.accessToken;
+    } catch (error) {
+        await msalInstance.acquireTokenRedirect({ ...loginRequest, account });
+        return null;
+    }
 };
 
-export const obtenerRol = () => {
-    return sessionStorage.getItem('rol');
-};
-
-export const cerrarSesion = () => {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('rol');
-};
-
-const headers = () => ({
+const headers = async () => ({
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${obtenerToken()}`
+    'Authorization': `Bearer ${await obtenerAccessToken()}`
 });
 
-export const login = async (rut, password) => {
-    const res = await fetch(`${BFF_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rut, password })
+export const cerrarSesion = async () => {
+    sessionStorage.removeItem('rol');
+    sessionStorage.removeItem('referenciaId');
+    sessionStorage.removeItem('estudiantesACargo');
+    const account = msalInstance.getActiveAccount();
+    await msalInstance.logoutRedirect({ account });
+};
+
+export const sincronizarPerfil = async () => {
+    const res = await fetch(`${BFF_URL}/api/bff/perfil`, {
+        headers: await headers()
     });
-    return res.json();
+    const data = await res.json();
+    if (data.rol) {
+        sessionStorage.setItem('rol', data.rol);
+        sessionStorage.setItem('referenciaId', data.referenciaId ?? '');
+        sessionStorage.setItem('estudiantesACargo', JSON.stringify(data.estudiantesACargo ?? []));
+    }
+    return data;
 };
 
 export const getDashboardEstudiante = async (id) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/estudiante/${id}`, {
-        headers: headers()
+        headers: await headers()
     });
     return res.json();
 };
 
 export const getMiPerfil = async () => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/miperfil`, {
-        headers: headers()
+        headers: await headers()
     });
     return res.json();
 };
 
 export const getDashboardCurso = async (id) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/curso/${id}`, {
-        headers: headers()
+        headers: await headers()
     });
     return res.json();
 };
 
 export const getAsignaturas = async () => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/asignaturas`, {
-        headers: headers()
+        headers: await headers()
     });
     return res.json();
 };
 
 export const getEvaluaciones = async () => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/evaluaciones`, {
-        headers: headers()
+        headers: await headers()
     });
     return res.json();
 };
@@ -70,7 +88,7 @@ export const getEvaluaciones = async () => {
 export const registrarAsistencia = async (datos) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/asistencias`, {
         method: 'POST',
-        headers: headers(),
+        headers: await headers(),
         body: JSON.stringify(datos)
     });
     return res.json();
@@ -79,7 +97,7 @@ export const registrarAsistencia = async (datos) => {
 export const registrarAnotacion = async (datos) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/anotaciones`, {
         method: 'POST',
-        headers: headers(),
+        headers: await headers(),
         body: JSON.stringify(datos)
     });
     return res.json();
@@ -88,7 +106,7 @@ export const registrarAnotacion = async (datos) => {
 export const publicarComunicado = async (datos) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/comunicados`, {
         method: 'POST',
-        headers: headers(),
+        headers: await headers(),
         body: JSON.stringify(datos)
     });
     return res.json();
@@ -97,7 +115,7 @@ export const publicarComunicado = async (datos) => {
 export const crearEvaluacion = async (datos) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/evaluaciones`, {
         method: 'POST',
-        headers: headers(),
+        headers: await headers(),
         body: JSON.stringify(datos)
     });
     return res.json();
@@ -106,7 +124,7 @@ export const crearEvaluacion = async (datos) => {
 export const registrarNota = async (datos) => {
     const res = await fetch(`${BFF_URL}/api/bff/dashboard/notas`, {
         method: 'POST',
-        headers: headers(),
+        headers: await headers(),
         body: JSON.stringify(datos)
     });
     return res.json();
@@ -114,7 +132,7 @@ export const registrarNota = async (datos) => {
 
 export const getEstudiantesApoderado = async (apoderadoId) => {
     const res = await fetch(`${BFF_URL}/api/academic/apoderados/${apoderadoId}/estudiantes`, {
-        headers: headers()
+        headers: await headers()
     });
     return res.json();
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
-import { getDashboardEstudiante, obtenerToken } from '../services/api';
+import { getDashboardEstudiante, obtenerEstudiantesACargo } from '../services/api';
 import { agruparNotasPorAsignatura, calcularPromedioNotas } from '../utils/notas';
 import '../css/DashboardApoderado.css';
 
@@ -14,18 +14,12 @@ function DashboardApoderado() {
     const navigate = useNavigate();
 
     // Extraer estudiantes a cargo del JWT
-    useEffect(() => {
-        const token = obtenerToken();
-        if (!token) { navigate('/login'); return; }
+        useEffect(() => {
+        const ids = obtenerEstudiantesACargo();
+        if (ids.length === 0) { navigate('/login'); return; }
 
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const ids = payload.estudiantesACargo || [];
-            setEstudiantesACargo(ids);
-            if (ids.length > 0) seleccionarEstudiante(ids[0]);
-        } catch {
-            navigate('/login');
-        }
+        setEstudiantesACargo(ids);
+        seleccionarEstudiante(ids[0]);
     }, []);
 
     const seleccionarEstudiante = async (id) => {
