@@ -114,3 +114,21 @@ AcadémicoGET/api/academic/notas/{alumnoId}Sí (Bearer JWT)OT.CreateConsulta el 
 AsistenciaGET/api/attendance/faltas/{alumnoId}Sí (Bearer JWT)OT.CreateRetorna el acumulado de inasistencias.
 ComunicacionesPOST/api/communication/avisosSí (Bearer JWT)OT.CreateRealiza el envío de boletines e-mail.
 
+8. Bitácora de Resolución de Problemas (Troubleshooting)
+Durante el proceso de desarrollo e integración se identificaron y solucionaron los siguientes fallos críticos:
+Error: Port 8080 was already in use
+Causa: Conflicto de puertos en Tomcat embebido por un proceso Java previo no cerrado.
+Solución: Reasignación de puerto a server.port=8081 en application.properties y finalización forzada del proceso con taskkill /PID <PID> /F.
+
+Error MSAL: No matching state found in storage
+Causa: Pérdida de la variable de estado state en la SPA al redirigir desde Microsoft por políticas de restricción de cookies en sessionStorage.
+Solución: Modificación de msalConfig para operar sobre localStorage y habilitación explícita de storeAuthStateInCookie: true.
+
+Bloqueo CORS Preflight (OPTIONS) en AWS API Gateway
+Causa: El navegador bloqueó peticiones hacia /v1/perfil debido a que la consulta previa OPTIONS no retornaba los encabezados CORS requeridos y exigía token de autorización.
+Solución: Se habilitó CORS en API Gateway, se fijó el Authorizer del método OPTIONS en NONE, y se realizó el despliegue (Deploy API) al stage v1.
+
+Verificación de Filtro de Seguridad Backend (HTTP 401)
+Prueba: Consumo directo del endpoint http://localhost:8081/api/ordenes desde el navegador (sin token).
+Resultado: Retorno exitoso de respuesta HTTP 401 Unauthorized, confirmando la protección por Spring Security.
+
