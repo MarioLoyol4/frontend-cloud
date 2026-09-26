@@ -1,7 +1,7 @@
 import { msalInstance } from "../msalInstance";
 import { loginRequest } from "../authConfig";
 
-const BFF_URL = 'http://localhost:9090';
+const BFF_URL = 'https://w6mqdm34tb.execute-api.us-east-1.amazonaws.com/v1';
 
 export const obtenerRol = () => sessionStorage.getItem('rol');
 export const obtenerReferenciaId = () => sessionStorage.getItem('referenciaId');
@@ -38,7 +38,7 @@ export const cerrarSesion = async () => {
 };
 
 export const sincronizarPerfil = async () => {
-    const res = await fetch(`${BFF_URL}/api/bff/perfil`, {
+    const res = await fetch(`${BFF_URL}/perfil`, {
         headers: await headers()
     });
     const data = await res.json();
@@ -51,42 +51,42 @@ export const sincronizarPerfil = async () => {
 };
 
 export const getDashboardEstudiante = async (id) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/estudiante/${id}`, {
+    const res = await fetch(`${BFF_URL}/estudiante/${id}`, {
         headers: await headers()
     });
     return res.json();
 };
 
 export const getMiPerfil = async () => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/miperfil`, {
+    const res = await fetch(`${BFF_URL}/miperfil`, {
         headers: await headers()
     });
     return res.json();
 };
 
 export const getDashboardCurso = async (id) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/curso/${id}`, {
+    const res = await fetch(`${BFF_URL}/curso/${id}`, {
         headers: await headers()
     });
     return res.json();
 };
 
 export const getAsignaturas = async () => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/asignaturas`, {
+    const res = await fetch(`${BFF_URL}/asignaturas`, {
         headers: await headers()
     });
     return res.json();
 };
 
 export const getEvaluaciones = async () => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/evaluaciones`, {
+    const res = await fetch(`${BFF_URL}/evaluaciones`, {
         headers: await headers()
     });
     return res.json();
 };
 
 export const registrarAsistencia = async (datos) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/asistencias`, {
+    const res = await fetch(`${BFF_URL}/asistencias`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos)
@@ -95,7 +95,7 @@ export const registrarAsistencia = async (datos) => {
 };
 
 export const registrarAnotacion = async (datos) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/anotaciones`, {
+    const res = await fetch(`${BFF_URL}/anotaciones`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos)
@@ -104,7 +104,7 @@ export const registrarAnotacion = async (datos) => {
 };
 
 export const publicarComunicado = async (datos) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/comunicados`, {
+    const res = await fetch(`${BFF_URL}/comunicados`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos)
@@ -113,7 +113,7 @@ export const publicarComunicado = async (datos) => {
 };
 
 export const crearEvaluacion = async (datos) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/evaluaciones`, {
+    const res = await fetch(`${BFF_URL}/evaluaciones`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos)
@@ -122,7 +122,7 @@ export const crearEvaluacion = async (datos) => {
 };
 
 export const registrarNota = async (datos) => {
-    const res = await fetch(`${BFF_URL}/api/bff/dashboard/notas`, {
+    const res = await fetch(`${BFF_URL}/notas`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos)
@@ -131,7 +131,7 @@ export const registrarNota = async (datos) => {
 };
 
 export const getEstudiantesApoderado = async (apoderadoId) => {
-    const res = await fetch(`${BFF_URL}/api/academic/apoderados/${apoderadoId}/estudiantes`, {
+    const res = await fetch(`${BFF_URL}/apoderados/${apoderadoId}/estudiantes`, {
         headers: await headers()
     });
     return res.json();
