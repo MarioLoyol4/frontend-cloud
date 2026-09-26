@@ -7,8 +7,16 @@ function ProtectedRoute({ children, roles }) {
     const isAuthenticated = useIsAuthenticated();
     const rol = obtenerRol();
 
-    if (!isAuthenticated) return <Navigate to="/login" />;
-    if (roles && !roles.includes(rol)) return <Navigate to="/login" />;
+    console.log("[DEBUG ProtectedRoute]", { roles, isAuthenticated, rol });
+
+    if (!isAuthenticated) {
+        console.log("[DEBUG ProtectedRoute] rebotando a /login: isAuthenticated es false");
+        return <Navigate to="/login" />;
+    }
+    if (roles && !roles.includes(rol)) {
+        console.log("[DEBUG ProtectedRoute] rebotando a /login: rol no incluido", { rol, roles });
+        return <Navigate to="/login" />;
+    }
     return children;
 }
 

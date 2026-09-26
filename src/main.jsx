@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+
 import { createRoot } from "react-dom/client";
 import { EventType } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
@@ -19,10 +19,10 @@ msalInstance.initialize().then(() => {
     return msalInstance.handleRedirectPromise();
 }).finally(() => {
     createRoot(document.getElementById("root")).render(
-        <StrictMode>
+        
             <MsalProvider instance={msalInstance}>
                 <App />
             </MsalProvider>
-        </StrictMode>
+        
     );
 });

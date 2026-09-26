@@ -18,7 +18,7 @@ import {
     registrarNota
 } from './api';
 
-const BFF_URL = 'http://localhost:8080';
+const BFF_URL = 'http://localhost:9090';
 
 // Mock estricto y transparente de SessionStorage
 const mockSessionStorage = (() => {

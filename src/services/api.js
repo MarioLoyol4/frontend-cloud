@@ -1,7 +1,7 @@
 import { msalInstance } from "../msalInstance";
 import { loginRequest } from "../authConfig";
 
-const BFF_URL = 'http://localhost:8080';
+const BFF_URL = 'http://localhost:9090';
 
 export const obtenerRol = () => sessionStorage.getItem('rol');
 export const obtenerReferenciaId = () => sessionStorage.getItem('referenciaId');

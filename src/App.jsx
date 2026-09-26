@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useIsAuthenticated } from "@azure/msal-react";
+import { useMsal, useIsAuthenticated } from "@azure/msal-react";
+import { InteractionStatus } from "@azure/msal-browser";
 import { obtenerRol, sincronizarPerfil } from "./services/api";
 import Login from "./pages/Login";
 import DashboardAdmin from "./pages/DashboardAdmin";
@@ -12,20 +13,28 @@ import './css/App.css';
 
 function RedirigirSegunRol() {
     const rol = obtenerRol();
+    console.log("[DEBUG RedirigirSegunRol] rol leído:", rol);
     if (rol === 'ADMIN') return <Navigate to="/admin" />;
     if (rol === 'DOCENTE') return <Navigate to="/docente" />;
     if (rol === 'ESTUDIANTE') return <Navigate to="/estudiante" />;
     if (rol === 'APODERADO') return <Navigate to="/apoderado" />;
+    console.log("[DEBUG RedirigirSegunRol] rol no coincide con ninguno, mandando a /login");
     return <Navigate to="/login" />;
 }
 
 function AuthGate({ children }) {
+    const { inProgress } = useMsal();
     const isAuthenticated = useIsAuthenticated();
     const [listo, setListo] = useState(false);
 
     useEffect(() => {
         let activo = true;
         const preparar = async () => {
+            
+            if (inProgress !== InteractionStatus.None) {
+                return;
+            }
+
             if (isAuthenticated && !obtenerRol()) {
                 try {
                     await sincronizarPerfil();
@@ -37,9 +46,11 @@ function AuthGate({ children }) {
         };
         preparar();
         return () => { activo = false; };
-    }, [isAuthenticated]);
+    }, [isAuthenticated, inProgress]);
 
-    if (isAuthenticated && !listo) {
+        console.log("[DEBUG AuthGate] inProgress:", inProgress, "isAuthenticated:", isAuthenticated, "listo:", listo, "rolGuardado:", obtenerRol());
+
+    if (inProgress !== InteractionStatus.None || (isAuthenticated && !listo)) {
         return <div className="cargando-sesion">Cargando sesión...</div>;
     }
     return children;

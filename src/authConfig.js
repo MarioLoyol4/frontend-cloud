@@ -6,6 +6,7 @@ export const msalConfig = {
         authority: `https://login.microsoftonline.com/${import.meta.env.VITE_AZURE_TENANT_ID}`,
         redirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI,
         postLogoutRedirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI + "/login",
+        navigateToLoginRequestUrl: false,
     },
     cache: {
         cacheLocation: "sessionStorage",
