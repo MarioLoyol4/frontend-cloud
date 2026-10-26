@@ -1,12 +1,6 @@
-# Sistema de Gestión Académica y Comunicaciones - EP3
+# Sistema de Gestión Académica y Comunicaciones
 
-Documentación técnica correspondiente a la **Evaluación Parcial N.º 3** de la asignatura **Desarrollo Cloud Native I (DSY1107)**, Duoc UC.
 
-*   **Proyecto:** Plataforma de gestión académica y comunicaciones asíncronas para el Colegio Bernardo O’Higgins.
-*   **Evaluación:** Encargo EP3 - Incorporación de RabbitMQ.
-*   **Ponderación:** 12%.
-
----
 
 ## 1. Descripción General
 
