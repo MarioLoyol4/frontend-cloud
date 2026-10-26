@@ -1,16 +1,16 @@
 # Informe Técnico y Documentación: Evaluación Parcial N°1 (DSY1107)
 
-**Asignatura:** Desarrollo Cloud Native I (DSY1107)[span_1](start_span)[span_1](end_span)  
-**Evaluación:** Evaluación Parcial N°1 - Encargo[span_2](start_span)[span_2](end_span)  
-**Institución:** Duoc UC[span_3](start_span)[span_3](end_span)  
-**Proyecto:** Sistema de Gestión Académica y Comunicaciones (Colegio Bernardo O'Higgins / Pedidos360)[span_4](start_span)[span_4](end_span)  
-**Ponderación:** 16% (40% de la evaluación técnica)[span_5](start_span)[span_5](end_span)  
+**Asignatura:** Desarrollo Cloud Native I (DSY1107)
+**Evaluación:** Evaluación Parcial N°1 - Encargo
+**Institución:** Duoc UC
+**Proyecto:** Sistema de Gestión Académica y Comunicaciones (Colegio Bernardo O'Higgins / Pedidos360)
+**Ponderación:** 16% (40% de la evaluación técnica)
 
 ---
 
 ## 1. Resumen Ejecutivo (Abstract)
 
-El presente informe documenta el diseño, desarrollo y despliegue de la arquitectura base para la solución de gestión Cloud Native[span_6](start_span)[span_6](end_span). El sistema implementa una arquitectura desacoplada compuesta por una Single Page Application (SPA) en el frontend construida con React y Vite, un punto de entrada protegido mediante **AWS API Gateway**, y una suite de microservicios en el backend estructurada de forma multimódulo en **Spring Boot 3.2.5** y **Java 21**[span_7](start_span)[span_7](end_span).
+El presente informe documenta el diseño, desarrollo y despliegue de la arquitectura base para la solución de gestión Cloud Native[span_6](start_span)[span_6](end_span). El sistema implementa una arquitectura desacoplada compuesta por una Single Page Application (SPA) en el frontend construida con React y Vite, un punto de entrada protegido mediante **AWS API Gateway**, y una suite de microservicios en el backend estructurada de forma multimódulo en **Spring Boot 3.2.5** y **Java 21**
 
 La solución garantiza la autenticación e integración con proveedores de identidad en la nube (IDaaS) utilizando **Microsoft Entra ID (Azure AD)**, **AWS Cognito** y **Google Identity Provider**[span_8](start_span)[span_8](end_span), asegurando el intercambio de información mediante tokens JWT con el flujo **OAuth 2.0 + PKCE**[span_9](start_span)[span_9](end_span).
 
