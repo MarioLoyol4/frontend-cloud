@@ -1,134 +1,122 @@
-# Informe Técnico y Documentación: Evaluación Parcial N°1 (DSY1107)
+Sistema de Gestión Académica y Comunicaciones
+Documentación técnica de la Evaluación Parcial N.º 1 de la asignatura Desarrollo Cloud Native I (DSY1107), Duoc UC.
+Proyecto: Plataforma de gestión académica y comunicaciones para el Colegio Bernardo O’Higgins.
+Evaluación: Encargo — ponderación informada: 16% (40% de la evaluación técnica).
 
-**Asignatura:** Desarrollo Cloud Native I (DSY1107)
-**Evaluación:** Evaluación Parcial N°1 - Encargo
-**Institución:** Duoc UC
-**Proyecto:** Sistema de Gestión Académica y Comunicaciones (Colegio Bernardo O'Higgins / Pedidos360)
-**Ponderación:** 16% (40% de la evaluación técnica)
+1. Descripción general
+El proyecto propone una solución web desacoplada para consultar información académica y de asistencia, además de gestionar comunicaciones. La arquitectura separa la interfaz de usuario de los servicios del backend y centraliza el acceso a través de un Backend for Frontend (BFF) y AWS API Gateway.
 
----
+La solución contempla autenticación mediante proveedores de identidad y autorización basada en tokens JWT. La documentación describe el uso de React y Vite en el frontend, y Spring Boot con Java 21 en el backend.
+2. Tecnologías principales
+Componente	Tecnología o herramienta	Propósito
+Frontend	React 18, Vite	Interfaz web de la aplicación
+Autenticación frontend	@azure/msal-browser, @azure/msal-react	Integración de inicio de sesión con Microsoft Entra ID
+Backend	Spring Boot 3.2.5, Java 21	Implementación de servicios y lógica de negocio
+Seguridad backend	Spring Security 6	Validación de tokens y autorización de solicitudes
+API de entrada	AWS API Gateway	Punto de entrada y configuración de CORS
+Identidad	Microsoft Entra ID, AWS Cognito y Google Identity Provider	Autenticación e integración de identidades
+Persistencia prevista	AWS RDS PostgreSQL, Spring Data JPA	Almacenamiento relacional de información
 
-## 1. Resumen Ejecutivo (Abstract)
 
-El presente informe documenta el diseño, desarrollo y despliegue de la arquitectura base para la solución de gestión Cloud Native[span_6](start_span)[span_6](end_span). El sistema implementa una arquitectura desacoplada compuesta por una Single Page Application (SPA) en el frontend construida con React y Vite, un punto de entrada protegido mediante **AWS API Gateway**, y una suite de microservicios en el backend estructurada de forma multimódulo en **Spring Boot 3.2.5** y **Java 21**
+3. Arquitectura
+Usuario
+  │
+  ▼
+Frontend (React + Vite + MSAL)
+  │  Solicitudes con token JWT
+  ▼
+AWS API Gateway
+  │
+  ▼
+BFF (Spring Boot + Spring Security)
+  ├── Academic Service
+  ├── Attendance Service
+  └── Communication Service
+          │
+          ▼
+   Servicio de correo / comunicaciones
 
-La solución garantiza la autenticación e integración con proveedores de identidad en la nube (IDaaS) utilizando **Microsoft Entra ID (Azure AD)**, **AWS Cognito** y **Google Identity Provider**[span_8](start_span)[span_8](end_span), asegurando el intercambio de información mediante tokens JWT con el flujo **OAuth 2.0 + PKCE**[span_9](start_span)[span_9](end_span).
+Servicios de backend ──► Persistencia relacional (AWS RDS PostgreSQL, prevista)
+Módulos del backend
+colegio-backend/
+├── academic-service/       # Calificaciones, asignaturas y registros académicos
+├── attendance-service/     # Asistencias e inasistencias
+├── communication-service/  # Notificaciones y correo electrónico
+└── bff-service/            # Agregación de datos y seguridad de acceso
+El backend se organiza como un proyecto multimódulo con un pom.xml raíz. Cada servicio mantiene una responsabilidad específica, lo que facilita separar y mantener las funcionalidades.
+4. Autenticación y seguridad
+El flujo de autenticación del frontend utiliza OAuth 2.0 con PKCE mediante MSAL:
+1. El usuario inicia sesión desde la aplicación.
+2. El frontend redirige al proveedor de identidad configurado.
+3. Después de autenticar al usuario, el proveedor devuelve un código temporal.
+4. MSAL intercambia el código y el verificador PKCE por los tokens correspondientes.
+5. El frontend envía el token de acceso en las solicitudes protegidas.
+6. Spring Security valida el token y comprueba los permisos necesarios antes de permitir el acceso.
+Respuestas de seguridad esperadas
+- 200 OK: la solicitud fue aceptada y procesada.
+- 401 Unauthorized: falta un token válido, la firma no es válida o el token expiró.
+- 403 Forbidden: el usuario está autenticado, pero no cuenta con el permiso requerido.
+Importante: los nombres de scopes, emisores, audiencia y proveedores deben coincidir con la configuración real de cada entorno. No publiques secretos, contraseñas, claves privadas ni tokens en el repositorio.
 
----
+5. Endpoints documentados
+Los siguientes endpoints aparecen en la documentación del proyecto. Deben verificarse contra la implementación actual antes de utilizarlos en otro entorno.
+Servicio	Método	Endpoint	Función
+BFF / Autenticación	GET	/v1/perfil	Obtener información del usuario autenticado
+Académico	GET	/api/academic/notas/{alumnoId}	Consultar calificaciones de un alumno
+Asistencia	GET	/api/attendance/faltas/{alumnoId}	Consultar inasistencias
+Comunicaciones	POST	/api/communication/avisos	Enviar avisos por correo electrónico
 
-## 2. Matriz de Cumplimiento de la Pauta de Evaluación
 
-A continuación, se resume la correspondencia entre los requerimientos evaluados en la pauta oficial[span_10](start_span)[span_10](end_span) y las soluciones técnicas aplicadas:
+Las rutas protegidas requieren un token de acceso en el encabezado:
+Authorization: Bearer <TOKEN>
+La documentación original asocia User.Read con el perfil y OT.Create con operaciones académicas, de asistencia y comunicaciones. Confirma que esos permisos estén definidos y sean apropiados en la configuración de identidad y del backend.
+6. Flujo funcional de ejemplo
+Consulta del panel académico
+1. El usuario inicia sesión.
+2. El frontend solicita los datos al BFF con su token.
+3. El BFF consulta el servicio académico y el servicio de asistencia.
+4. Los servicios devuelven sus resultados al BFF.
+5. El BFF reúne la información y la entrega al frontend en formato JSON.
+6. El frontend presenta los datos en pantalla.
+Envío de una comunicación
+1. El usuario solicita enviar un aviso desde el frontend.
+2. La aplicación envía la solicitud autenticada al BFF.
+3. El BFF deriva la operación al servicio de comunicaciones.
+4. El servicio procesa el envío y devuelve el resultado.
+5. La aplicación informa al usuario del resultado recibido.
+7. Configuración y ejecución
+La configuración exacta de ejecución depende de los archivos del proyecto y de las credenciales disponibles. Antes de iniciar los servicios:
+- Instala las versiones de Node.js y Java compatibles con los proyectos.
+- Configura las variables y archivos de entorno requeridos por el frontend y cada módulo backend.
+- Registra las URI de redirección correctas en el proveedor de identidad.
+- Verifica los valores de issuer, audience, scopes y la configuración JWKS usados para validar los tokens.
+- Configura la conexión a base de datos si el módulo correspondiente la utiliza.
+- Revisa los puertos disponibles y la configuración CORS del entorno.
+No incluyas credenciales reales en el README ni en el control de versiones. Usa variables de entorno o un gestor de secretos para los valores sensibles.
+Esta sección describe las comprobaciones previas; los comandos concretos de instalación y arranque deben añadirse según los package.json, pom.xml y archivos de configuración presentes en el repositorio.
 
-| Indicador de Evaluación | Ponderación | Estado | Implementación Técnica Destacada |
-| :--- | :---: | :---: | :--- |
-| **Integración MSAL en Frontend**[span_11](start_span)[span_11](end_span) | 60%[span_12](start_span)[span_12](end_span) | **100% Cumplido**[span_13](start_span)[span_13](end_span) | Flujo PKCE configurado con `@azure/msal-browser`, adquisición silenciosa de tokens (`acquireTokenSilent`), manejo de scopes (`OT.Create`) y almacenamiento en `localStorage` con soporte de cookies para evitar pérdidas de estado[span_14](start_span)[span_14](end_span). |
-| **Validación de Token en BFF / API Manager**[span_15](start_span)[span_15](end_span) | 40%[span_16](start_span)[span_16](end_span) | **100% Cumplido**[span_17](start_span)[span_17](end_span) | Spring Security 6 configurado como OAuth2 Resource Server. Validación automática de firma criptográfica via JWKS, *issuer*, *audience*, expiración (`exp`) y respuestas controladas `401 Unauthorized` / `403 Forbidden`[span_18](start_span)[span_18](end_span). |
+8. Problemas frecuentes
+El puerto 8080 está ocupado
+Posible causa: otro proceso está utilizando el puerto requerido por la aplicación.
 
----
+Qué revisar: identifica el proceso que ocupa el puerto y confirma el valor de server.port en el archivo application.properties. La documentación del proyecto registra el uso de 8081 como alternativa.
+MSAL muestra No matching state found in storage
+Posible causa: el estado de autenticación no se conserva correctamente durante la redirección.
 
-## 3. Arquitectura del Sistema
+Qué revisar: la configuración de almacenamiento de MSAL, la URI de redirección y las políticas del navegador. El proyecto documenta el uso de localStorage y storeAuthStateInCookie: true; valida esta configuración según la versión de MSAL y las necesidades de seguridad del entorno.
+Error CORS en AWS API Gateway
+Posible causa: la respuesta a la solicitud previa OPTIONS no incluye los encabezados CORS requeridos o está exigiendo autenticación indebidamente.
 
-### 3.1. Frontend (React + Vite + MSAL.js)
-* **Framework:** React 18 / Vite.
-* **Autenticación:** Biblioteca MSAL (`@azure/msal-browser` y `@azure/msal-react`) configurada bajo el patrón PKCE.
-* **Gestión de Sesión:** Renovación silenciosa mediante `acquireTokenSilent()`.
-* **Persistencia:** Configuración en `localStorage` con `storeAuthStateInCookie: true` para mitigar bloqueos de cookies de terceros en redirecciones OAuth2.
+Qué revisar: los orígenes permitidos, métodos y encabezados configurados; la respuesta de OPTIONS; el authorizer aplicado y que los cambios estén desplegados en el stage correspondiente.
+El backend responde 401 Unauthorized
+Posible causa: no se envió un token válido o no coincide con la configuración del servidor.
 
-### 3.2. Backend Multimódulo (Spring Boot 3.2.5 & Java 21)
-Estructura de microservicios administrada mediante un `pom.xml` padre con empaquetado contenedor (`<packaging>pom</packaging>`):
-
-```text
-colegio-backend/ (Root POM)
-├── academic-service/         # Gestión de calificaciones, asignaturas y registros académicos
-├── attendance-service/       # Control de asistencias e inasistencias
-├── communication-service/    # Servicio de notificaciones y correo electrónico
-└── bff-service/              # Backend For Frontend: Agregación de datos y seguridad unificada
-
-###3.3. Infraestructura Cloud e IDaaS
-AWS API Gateway: Punto único de entrada (Proxy Inverso) y gestor de políticas CORS para peticiones entre orígenes.
-IDaaS (Microsoft Entra ID / AWS Cognito): Emisión y firma de tokens JWT con roles y scopes personalizados (OT.Create).
-Google Cloud Console: Proveedor federado de identidades SSO integrado en AWS Cognito.
-
-4. Esquema de Seguridad y Flujo de Autenticación (OAuth2 + PKCE)
-4.1. Flujo PKCE en el Cliente (React)
-Generación de Verificador: La SPA crea en memoria un secreto criptográfico aleatorio (code_verifier) y calcula su hash SHA-256 (code_challenge).
-Redirección al IDaaS: Redirige al usuario a Microsoft Entra ID enviando el code_challenge.
-Recepción del Código: Tras autenticarse, Entra ID devuelve un code temporal a http://localhost:5173/.
-Canje Seguro: MSAL envía un POST con el code y el code_verifier original en texto plano. El IDaaS valida que SHA256(code_verifier) == code_challenge y entrega los tokens JWT sin exponer credenciales secretas.
-
-4.2. Validación de Tokens en Spring Security (Resource Server)
-El microservicio bff-service intercepta cada solicitud HTTP a través de DefaultSecurityFilterChain:
-
-HTTP 401 Unauthorized: Emitido si no se adjunta el encabezado Authorization: Bearer <TOKEN>, si la firma criptográfica falla o si el token ha expirado.
-HTTP 403 Forbidden: Emitido si el token es válido pero el usuario carece del scope necesario (OT.Create).
-HTTP 200 OK: Petición validada y autorizada para ejecución.
-
-5. Diagramas de Secuencia del Sistema
-5.1. Diagrama de Secuencia
-title Colegio O'Higgins - Flujo Completo de Integracion
-
-actor Usuario
-participant Front
-participant IdP (Entra ID / Cognito)
-participant BFF
-participant Academico
-participant Asistencia
-participant Correos
-
-autonumber
-
-note over Usuario, IdP (Entra ID / Cognito): Autenticación OAuth2 / PKCE
-Usuario->Front: Inicia sesion
-Front->IdP (Entra ID / Cognito): Redirige a Login
-Usuario->IdP (Entra ID / Cognito): Autentica credenciales
-IdP (Entra ID / Cognito)-->Front: Retorna JWT Access Token
-Front-->Usuario: Entra al sistema
-
-note over Front, Correos: Carga de Dashboard (Orquestación BFF)
-Usuario->Front: Ve dashboard
-Front->BFF: Pide los datos (Header: Bearer Token)
-BFF->Academico: Buscar notas
-Academico-->BFF: Notas
-BFF->Asistencia: Busca faltas
-Asistencia-->BFF: Faltas
-BFF-->Front: Datos armados (JSON)
-Front-->Usuario: Muestra la pantalla
-
-note over Front, Correos: Envío de Comunicaciones
-Usuario->Front: Manda el aviso
-Front->BFF: Envia el mensaje (Header: Bearer Token)
-BFF->Correos: Manda el email
-Correos-->BFF: OK / Listo
-BFF-->Front: OK / Listo
-Front-->Usuario: Aviso enviado
-
-###6. Integración con Base de Datos Cloud (Persistencia)
-De acuerdo con los requerimientos de la evaluación, la capa de persistencia se conecta a una base de datos relacional en la nube (AWS RDS PostgreSQL) utilizando Spring Data JPA.  
-Configuración de Conexión (bff-service/src/main/resources/application.properties)
-
-###7. Catálogo de Endpoints de la API
-Servicio Método Endpoint Autenticación RequeridaScope / ClaimDescripción
-BFF / AuthGET/v1/perfilSí (Bearer JWT)User.ReadObtiene la información del usuario autenticado.
-AcadémicoGET/api/academic/notas/{alumnoId}Sí (Bearer JWT)OT.CreateConsulta el listado de calificaciones.
-AsistenciaGET/api/attendance/faltas/{alumnoId}Sí (Bearer JWT)OT.CreateRetorna el acumulado de inasistencias.
-ComunicacionesPOST/api/communication/avisosSí (Bearer JWT)OT.CreateRealiza el envío de boletines e-mail.
-
-8. Bitácora de Resolución de Problemas (Troubleshooting)
-Durante el proceso de desarrollo e integración se identificaron y solucionaron los siguientes fallos críticos:
-Error: Port 8080 was already in use
-Causa: Conflicto de puertos en Tomcat embebido por un proceso Java previo no cerrado.
-Solución: Reasignación de puerto a server.port=8081 en application.properties y finalización forzada del proceso con taskkill /PID <PID> /F.
-
-Error MSAL: No matching state found in storage
-Causa: Pérdida de la variable de estado state en la SPA al redirigir desde Microsoft por políticas de restricción de cookies en sessionStorage.
-Solución: Modificación de msalConfig para operar sobre localStorage y habilitación explícita de storeAuthStateInCookie: true.
-
-Bloqueo CORS Preflight (OPTIONS) en AWS API Gateway
-Causa: El navegador bloqueó peticiones hacia /v1/perfil debido a que la consulta previa OPTIONS no retornaba los encabezados CORS requeridos y exigía token de autorización.
-Solución: Se habilitó CORS en API Gateway, se fijó el Authorizer del método OPTIONS en NONE, y se realizó el despliegue (Deploy API) al stage v1.
-
-Verificación de Filtro de Seguridad Backend (HTTP 401)
-Prueba: Consumo directo del endpoint http://localhost:8081/api/ordenes desde el navegador (sin token).
-Resultado: Retorno exitoso de respuesta HTTP 401 Unauthorized, confirmando la protección por Spring Security.
-
+Qué revisar: el encabezado Authorization, la expiración del token, la firma, el emisor (issuer), la audiencia (audience) y la configuración JWKS.
+9. Estado y alcance de la documentación
+Este README reúne la arquitectura, las tecnologías, los flujos de autenticación, los endpoints documentados y los problemas registrados durante el desarrollo. Algunos componentes —como la persistencia en AWS RDS y la integración de proveedores de identidad— deben contrastarse con la configuración efectiva del entorno para confirmar su estado.
+10. Información académica
+- Institución: Duoc UC
+- Asignatura: Desarrollo Cloud Native I (DSY1107)
+- Evaluación: Evaluación Parcial N.º 1 — Encargo
+- Proyecto: Sistema de Gestión Académica y Comunicaciones
+- Caso: Colegio Bernardo O’Higgins / referencia a Pedidos360 en la documentación original
