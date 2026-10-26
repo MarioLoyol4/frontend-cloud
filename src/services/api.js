@@ -136,3 +136,64 @@ export const getEstudiantesApoderado = async (apoderadoId) => {
     });
     return res.json();
 };
+export const crearCola = async (nombre) => {
+    const res = await fetch(`${BFF_URL}/rabbit/queues`, {
+        method: 'POST',
+        headers: await headers(),
+        body: JSON.stringify({ name: nombre })
+    });
+    if (!res.ok) throw new Error('Error al crear la cola');
+    return res.json();
+};
+
+
+export const eliminarCola = async (nombre) => {
+    const res = await fetch(`${BFF_URL}/rabbit/queues/${nombre}`, {
+        method: 'DELETE',
+        headers: await headers()
+    });
+    if (!res.ok) throw new Error('Error al eliminar la cola');
+    return res.json();
+};
+
+
+export const crearExchange = async (nombre, tipo) => {
+    const res = await fetch(`${BFF_URL}/rabbit/exchanges`, {
+        method: 'POST',
+        headers: await headers(),
+        body: JSON.stringify({ name: nombre, type: tipo })
+    });
+    if (!res.ok) throw new Error('Error al crear el exchange');
+    return res.json();
+};
+
+
+export const eliminarExchange = async (nombre) => {
+    const res = await fetch(`${BFF_URL}/rabbit/exchanges/${nombre}`, {
+        method: 'DELETE',
+        headers: await headers()
+    });
+    if (!res.ok) throw new Error('Error al eliminar el exchange');
+    return res.json();
+};
+
+
+export const crearBinding = async (queueName, exchangeName, routingKey) => {
+    const res = await fetch(`${BFF_URL}/rabbit/bindings`, {
+        method: 'POST',
+        headers: await headers(),
+        body: JSON.stringify({ queueName, exchangeName, routingKey })
+    });
+    if (!res.ok) throw new Error('Error al crear el binding');
+    return res.json();
+};
+
+
+// --- Simulación Asíncrona (Notificaciones) ---
+export const getNotificaciones = async () => {
+    // Asumiendo que tienes un endpoint en el BFF para traer los comunicados/notificaciones
+    const res = await fetch(`${BFF_URL}/comunicados/destinatario/APODERADOS`, {
+        headers: await headers()
+    });
+    return res.json();
+};
