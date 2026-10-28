@@ -1,7 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
-import { getDashboardCurso, getAsignaturas, getEvaluaciones, registrarAsistencia, registrarAnotacion, publicarComunicado, registrarNota, crearEvaluacion } from '../services/api';
+import {
+    getDashboardCurso,
+    getAsignaturas,
+    getEvaluaciones,
+    registrarAsistencia,
+    registrarAnotacion,
+    publicarComunicado,
+    registrarNota,
+    crearEvaluacion,
+} from '../services/api';
 import '../css/DashboardDocente.css';
 
 const obtenerFechaHoy = () => new Date().toISOString().slice(0, 10);
@@ -21,22 +30,22 @@ function DashboardDocente() {
         estudianteId: '',
         tipo: 'POSITIVA',
         descripcion: '',
-        fecha: obtenerFechaHoy()
+        fecha: obtenerFechaHoy(),
     });
     const [formComunicado, setFormComunicado] = useState({
         titulo: '',
         contenido: '',
-        destinatario: 'CURSO_1'
+        destinatario: 'CURSO_1',
     });
     const [formEvaluacion, setFormEvaluacion] = useState({
         nombre: '',
         fecha: obtenerFechaHoy(),
-        asignaturaId: ''
+        asignaturaId: '',
     });
     const [formNota, setFormNota] = useState({
         estudianteId: '',
         evaluacionId: '',
-        valor: ''
+        valor: '',
     });
     const navigate = useNavigate();
 
@@ -51,7 +60,7 @@ function DashboardDocente() {
             try {
                 const [listaAsignaturas, listaEvaluaciones] = await Promise.all([
                     getAsignaturas(),
-                    getEvaluaciones()
+                    getEvaluaciones(),
                 ]);
 
                 if (Array.isArray(listaAsignaturas)) {
@@ -62,7 +71,10 @@ function DashboardDocente() {
                     setEvaluaciones(listaEvaluaciones);
                 }
             } catch {
-                setMensajeAccion({ tipo: 'error', texto: 'No se pudieron cargar asignaturas o evaluaciones' });
+                setMensajeAccion({
+                    tipo: 'error',
+                    texto: 'No se pudieron cargar asignaturas o evaluaciones',
+                });
             }
         };
 
@@ -89,24 +101,26 @@ function DashboardDocente() {
             estudianteId: estudiantes.some((estudiante) => String(estudiante.id) === String(prev.estudianteId))
                 ? prev.estudianteId
                 : String(estudiantes[0].id),
-            fecha: prev.fecha || obtenerFechaHoy()
+            fecha: prev.fecha || obtenerFechaHoy(),
         }));
 
         setFormComunicado((prev) => ({
             ...prev,
-            destinatario: prev.destinatario.startsWith('CURSO_') ? `CURSO_${cursoId}` : prev.destinatario || `CURSO_${cursoId}`
+            destinatario: prev.destinatario.startsWith('CURSO_')
+                ? `CURSO_${cursoId}`
+                : prev.destinatario || `CURSO_${cursoId}`,
         }));
 
         setFormEvaluacion((prev) => ({
             ...prev,
-            asignaturaId: prev.asignaturaId || ''
+            asignaturaId: prev.asignaturaId || '',
         }));
 
         setFormNota((prev) => ({
             ...prev,
             estudianteId: estudiantes.some((estudiante) => String(estudiante.id) === String(prev.estudianteId))
                 ? prev.estudianteId
-                : String(estudiantes[0].id)
+                : String(estudiantes[0].id),
         }));
     }, [datos, cursoId]);
 
@@ -114,9 +128,13 @@ function DashboardDocente() {
         setCargando(true);
         setError('');
         setDatos(null);
+
         try {
             const data = await getDashboardCurso(id);
-            if (data.error) { setError(data.error); return; }
+            if (data.error) {
+                setError(data.error);
+                return;
+            }
             setDatos(data);
         } catch {
             setError('Error al cargar los datos del curso');
@@ -133,7 +151,7 @@ function DashboardDocente() {
     const manejarCambioAsistencia = (estudianteId, valor) => {
         setEstadoAsistencia((prev) => ({
             ...prev,
-            [estudianteId]: valor
+            [estudianteId]: valor,
         }));
     };
 
@@ -145,7 +163,7 @@ function DashboardDocente() {
             const respuesta = await registrarAsistencia({
                 estudianteId: estudiante.id,
                 fecha: fechaLista,
-                estado: estadoAsistencia[estudiante.id] || 'PRESENTE'
+                estado: estadoAsistencia[estudiante.id] || 'PRESENTE',
             });
 
             if (respuesta?.error) {
@@ -155,7 +173,7 @@ function DashboardDocente() {
 
             setMensajeAccion({
                 tipo: 'ok',
-                texto: `Asistencia registrada para ${estudiante.nombre} ${estudiante.apellido}`
+                texto: `Asistencia registrada para ${estudiante.nombre} ${estudiante.apellido}`,
             });
         } catch {
             setMensajeAccion({ tipo: 'error', texto: 'No se pudo registrar la asistencia' });
@@ -174,7 +192,7 @@ function DashboardDocente() {
                 estudianteId: Number(formAnotacion.estudianteId),
                 tipo: formAnotacion.tipo,
                 descripcion: formAnotacion.descripcion,
-                fecha: formAnotacion.fecha
+                fecha: formAnotacion.fecha,
             });
 
             if (respuesta?.error) {
@@ -185,11 +203,11 @@ function DashboardDocente() {
             setFormAnotacion((prev) => ({
                 ...prev,
                 descripcion: '',
-                tipo: 'POSITIVA'
+                tipo: 'POSITIVA',
             }));
             setMensajeAccion({
                 tipo: 'ok',
-                texto: 'Anotación registrada correctamente'
+                texto: 'Anotación registrada correctamente',
             });
         } catch {
             setMensajeAccion({ tipo: 'error', texto: 'No se pudo registrar la anotación' });
@@ -208,7 +226,7 @@ function DashboardDocente() {
                 titulo: formComunicado.titulo,
                 contenido: formComunicado.contenido,
                 autorId: 'DOCENTE',
-                destinatario: formComunicado.destinatario
+                destinatario: formComunicado.destinatario,
             });
 
             if (respuesta?.error) {
@@ -219,7 +237,7 @@ function DashboardDocente() {
             setFormComunicado((prev) => ({
                 ...prev,
                 titulo: '',
-                contenido: ''
+                contenido: '',
             }));
             await cargarCurso(cursoId);
             setMensajeAccion({ tipo: 'ok', texto: 'Comunicado publicado correctamente' });
@@ -239,7 +257,7 @@ function DashboardDocente() {
             const respuesta = await crearEvaluacion({
                 nombre: formEvaluacion.nombre,
                 fecha: formEvaluacion.fecha,
-                asignatura: { id: Number(formEvaluacion.asignaturaId) }
+                asignatura: { id: Number(formEvaluacion.asignaturaId) },
             });
 
             if (respuesta?.error) {
@@ -250,11 +268,11 @@ function DashboardDocente() {
             setFormEvaluacion((prev) => ({
                 ...prev,
                 nombre: '',
-                asignaturaId: ''
+                asignaturaId: '',
             }));
             setMensajeAccion({
                 tipo: 'ok',
-                texto: 'Evaluación creada correctamente'
+                texto: 'Evaluación creada correctamente',
             });
         } catch {
             setMensajeAccion({ tipo: 'error', texto: 'No se pudo crear la evaluación' });
@@ -272,7 +290,7 @@ function DashboardDocente() {
             const respuesta = await registrarNota({
                 valor: Number(formNota.valor),
                 estudiante: { id: Number(formNota.estudianteId) },
-                evaluacion: { id: Number(formNota.evaluacionId) }
+                evaluacion: { id: Number(formNota.evaluacionId) },
             });
 
             if (respuesta?.error) {
@@ -283,11 +301,11 @@ function DashboardDocente() {
             setFormNota((prev) => ({
                 ...prev,
                 evaluacionId: '',
-                valor: ''
+                valor: '',
             }));
             setMensajeAccion({
                 tipo: 'ok',
-                texto: 'Nota registrada correctamente'
+                texto: 'Nota registrada correctamente',
             });
         } catch {
             setMensajeAccion({ tipo: 'error', texto: 'No se pudo registrar la nota' });
@@ -327,9 +345,7 @@ function DashboardDocente() {
                     </div>
                 )}
 
-                {error && (
-                    <div className="docente-error">{error}</div>
-                )}
+                {error && <div className="docente-error">{error}</div>}
 
                 {mensajeAccion.texto && (
                     <div className={`docente-mensaje docente-mensaje-${mensajeAccion.tipo}`}>
@@ -339,15 +355,12 @@ function DashboardDocente() {
 
                 {datos && !cargando && (
                     <div className="docente-contenido">
-
-                        {/* Estudiantes del curso */}
                         <div className="docente-card docente-card-grande">
                             <div className="docente-card-header">
                                 <h2>Pasar la lista</h2>
-                                <span className="docente-badge">
-                                    {estudiantes.length} estudiantes
-                                </span>
+                                <span className="docente-badge">{estudiantes.length} estudiantes</span>
                             </div>
+
                             <div className="docente-card-body">
                                 <div className="docente-lista-controles">
                                     <label htmlFor="fechaLista">Fecha de la lista</label>
@@ -382,7 +395,9 @@ function DashboardDocente() {
                                                         <select
                                                             aria-label={`Asistencia de ${e.nombre} ${e.apellido}`}
                                                             value={estadoAsistencia[e.id] || 'PRESENTE'}
-                                                            onChange={(event) => manejarCambioAsistencia(e.id, event.target.value)}
+                                                            onChange={(event) =>
+                                                                manejarCambioAsistencia(e.id, event.target.value)
+                                                            }
                                                         >
                                                             <option value="PRESENTE">PRESENTE</option>
                                                             <option value="AUSENTE">AUSENTE</option>
@@ -396,7 +411,9 @@ function DashboardDocente() {
                                                             onClick={() => registrarAsistenciaEstudiante(e)}
                                                             disabled={accionEnCurso === `asistencia-${e.id}`}
                                                         >
-                                                            {accionEnCurso === `asistencia-${e.id}` ? 'Guardando...' : 'Guardar asistencia'}
+                                                            {accionEnCurso === `asistencia-${e.id}`
+                                                                ? 'Guardando...'
+                                                                : 'Guardar asistencia'}
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -420,7 +437,9 @@ function DashboardDocente() {
                                         id="nombreEvaluacion"
                                         type="text"
                                         value={formEvaluacion.nombre}
-                                        onChange={(e) => setFormEvaluacion((prev) => ({ ...prev, nombre: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormEvaluacion((prev) => ({ ...prev, nombre: e.target.value }))
+                                        }
                                         placeholder="Ej: Prueba de Álgebra"
                                     />
 
@@ -429,14 +448,21 @@ function DashboardDocente() {
                                         id="fechaEvaluacion"
                                         type="date"
                                         value={formEvaluacion.fecha}
-                                        onChange={(e) => setFormEvaluacion((prev) => ({ ...prev, fecha: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormEvaluacion((prev) => ({ ...prev, fecha: e.target.value }))
+                                        }
                                     />
 
                                     <label htmlFor="asignaturaEvaluacion">Asignatura</label>
                                     <select
                                         id="asignaturaEvaluacion"
                                         value={formEvaluacion.asignaturaId}
-                                        onChange={(e) => setFormEvaluacion((prev) => ({ ...prev, asignaturaId: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormEvaluacion((prev) => ({
+                                                ...prev,
+                                                asignaturaId: e.target.value,
+                                            }))
+                                        }
                                     >
                                         <option value="">Selecciona una asignatura</option>
                                         {asignaturas.map((asignatura) => (
@@ -449,7 +475,11 @@ function DashboardDocente() {
                                     <button
                                         type="submit"
                                         className="docente-form-btn"
-                                        disabled={accionEnCurso === 'evaluacion' || !formEvaluacion.nombre || !formEvaluacion.asignaturaId}
+                                        disabled={
+                                            accionEnCurso === 'evaluacion' ||
+                                            !formEvaluacion.nombre ||
+                                            !formEvaluacion.asignaturaId
+                                        }
                                     >
                                         {accionEnCurso === 'evaluacion' ? 'Creando...' : 'Crear evaluación'}
                                     </button>
@@ -467,7 +497,9 @@ function DashboardDocente() {
                                     <select
                                         id="estudianteNota"
                                         value={formNota.estudianteId}
-                                        onChange={(e) => setFormNota((prev) => ({ ...prev, estudianteId: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormNota((prev) => ({ ...prev, estudianteId: e.target.value }))
+                                        }
                                     >
                                         {estudiantes.map((estudiante) => (
                                             <option key={estudiante.id} value={estudiante.id}>
@@ -480,12 +512,15 @@ function DashboardDocente() {
                                     <select
                                         id="evaluacionNota"
                                         value={formNota.evaluacionId}
-                                        onChange={(e) => setFormNota((prev) => ({ ...prev, evaluacionId: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormNota((prev) => ({ ...prev, evaluacionId: e.target.value }))
+                                        }
                                     >
                                         <option value="">Selecciona una evaluación</option>
                                         {evaluaciones.map((evaluacion) => (
                                             <option key={evaluacion.id} value={evaluacion.id}>
-                                                {evaluacion.nombre}{evaluacion.fecha ? ` - ${evaluacion.fecha}` : ''}
+                                                {evaluacion.nombre}
+                                                {evaluacion.fecha ? ` - ${evaluacion.fecha}` : ''}
                                             </option>
                                         ))}
                                     </select>
@@ -498,14 +533,21 @@ function DashboardDocente() {
                                         max="7"
                                         step="0.1"
                                         value={formNota.valor}
-                                        onChange={(e) => setFormNota((prev) => ({ ...prev, valor: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormNota((prev) => ({ ...prev, valor: e.target.value }))
+                                        }
                                         placeholder="Ej: 6.5"
                                     />
 
                                     <button
                                         type="submit"
                                         className="docente-form-btn"
-                                        disabled={accionEnCurso === 'nota' || !formNota.estudianteId || !formNota.evaluacionId || !formNota.valor}
+                                        disabled={
+                                            accionEnCurso === 'nota' ||
+                                            !formNota.estudianteId ||
+                                            !formNota.evaluacionId ||
+                                            !formNota.valor
+                                        }
                                     >
                                         {accionEnCurso === 'nota' ? 'Registrando...' : 'Guardar nota'}
                                     </button>
@@ -513,7 +555,6 @@ function DashboardDocente() {
                             </div>
                         </div>
 
-                        {/* Anotaciones */}
                         <div className="docente-card">
                             <div className="docente-card-header">
                                 <h2>Registrar anotación</h2>
@@ -524,7 +565,12 @@ function DashboardDocente() {
                                     <select
                                         id="estudianteAnotacion"
                                         value={formAnotacion.estudianteId}
-                                        onChange={(e) => setFormAnotacion((prev) => ({ ...prev, estudianteId: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormAnotacion((prev) => ({
+                                                ...prev,
+                                                estudianteId: e.target.value,
+                                            }))
+                                        }
                                     >
                                         {estudiantes.map((estudiante) => (
                                             <option key={estudiante.id} value={estudiante.id}>
@@ -537,7 +583,9 @@ function DashboardDocente() {
                                     <select
                                         id="tipoAnotacion"
                                         value={formAnotacion.tipo}
-                                        onChange={(e) => setFormAnotacion((prev) => ({ ...prev, tipo: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormAnotacion((prev) => ({ ...prev, tipo: e.target.value }))
+                                        }
                                     >
                                         <option value="POSITIVA">POSITIVA</option>
                                         <option value="NEGATIVA">NEGATIVA</option>
@@ -548,7 +596,9 @@ function DashboardDocente() {
                                         id="fechaAnotacion"
                                         type="date"
                                         value={formAnotacion.fecha}
-                                        onChange={(e) => setFormAnotacion((prev) => ({ ...prev, fecha: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormAnotacion((prev) => ({ ...prev, fecha: e.target.value }))
+                                        }
                                     />
 
                                     <label htmlFor="descripcionAnotacion">Descripción</label>
@@ -556,14 +606,23 @@ function DashboardDocente() {
                                         id="descripcionAnotacion"
                                         rows="4"
                                         value={formAnotacion.descripcion}
-                                        onChange={(e) => setFormAnotacion((prev) => ({ ...prev, descripcion: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormAnotacion((prev) => ({
+                                                ...prev,
+                                                descripcion: e.target.value,
+                                            }))
+                                        }
                                         placeholder="Describe el motivo de la anotación"
                                     />
 
                                     <button
                                         type="submit"
                                         className="docente-form-btn"
-                                        disabled={accionEnCurso === 'anotacion' || !formAnotacion.descripcion || !formAnotacion.estudianteId}
+                                        disabled={
+                                            accionEnCurso === 'anotacion' ||
+                                            !formAnotacion.descripcion ||
+                                            !formAnotacion.estudianteId
+                                        }
                                     >
                                         {accionEnCurso === 'anotacion' ? 'Registrando...' : 'Guardar anotación'}
                                     </button>
@@ -571,7 +630,6 @@ function DashboardDocente() {
                             </div>
                         </div>
 
-                        {/* Comunicados */}
                         <div className="docente-card">
                             <div className="docente-card-header">
                                 <h2>Enviar comunicado</h2>
@@ -583,7 +641,9 @@ function DashboardDocente() {
                                         id="tituloComunicado"
                                         type="text"
                                         value={formComunicado.titulo}
-                                        onChange={(e) => setFormComunicado((prev) => ({ ...prev, titulo: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormComunicado((prev) => ({ ...prev, titulo: e.target.value }))
+                                        }
                                         placeholder="Título del comunicado"
                                     />
 
@@ -591,7 +651,12 @@ function DashboardDocente() {
                                     <select
                                         id="destinatarioComunicado"
                                         value={formComunicado.destinatario}
-                                        onChange={(e) => setFormComunicado((prev) => ({ ...prev, destinatario: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormComunicado((prev) => ({
+                                                ...prev,
+                                                destinatario: e.target.value,
+                                            }))
+                                        }
                                     >
                                         <option value={`CURSO_${cursoId}`}>Curso actual</option>
                                         <option value="GENERAL">General</option>
@@ -603,20 +668,29 @@ function DashboardDocente() {
                                         id="contenidoComunicado"
                                         rows="5"
                                         value={formComunicado.contenido}
-                                        onChange={(e) => setFormComunicado((prev) => ({ ...prev, contenido: e.target.value }))}
+                                        onChange={(e) =>
+                                            setFormComunicado((prev) => ({
+                                                ...prev,
+                                                contenido: e.target.value,
+                                            }))
+                                        }
                                         placeholder="Escribe el comunicado"
                                     />
 
                                     <button
                                         type="submit"
                                         className="docente-form-btn"
-                                        disabled={accionEnCurso === 'comunicado' || !formComunicado.titulo || !formComunicado.contenido}
+                                        disabled={
+                                            accionEnCurso === 'comunicado' ||
+                                            !formComunicado.titulo ||
+                                            !formComunicado.contenido
+                                        }
                                     >
                                         {accionEnCurso === 'comunicado' ? 'Enviando...' : 'Enviar comunicado'}
                                     </button>
                                 </form>
 
-                                <div className="docente-separador"></div>
+                                <div className="docente-separador" />
 
                                 {datos.comunicados?.disponible === false ? (
                                     <p className="docente-no-disponible">{datos.comunicados.mensaje}</p>
@@ -642,6 +716,16 @@ function DashboardDocente() {
             </main>
         </div>
     );
+
+    const [boletinMsg, setBoletinMsg] = useState('');
+    const pedirBoletin = async (estudianteId) => {
+        try {
+            await solicitarBoletin(estudianteId);
+            setBoletinMsg('Boletín en cola: el apoderado verá el comunicado en unos segundos.');
+        } catch (e) {
+            setBoletinMsg(e.message);
+        }
+    };
 }
 
 export default DashboardDocente;
