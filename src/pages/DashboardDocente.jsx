@@ -1,16 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
-import {
-    getDashboardCurso,
-    getAsignaturas,
-    getEvaluaciones,
-    registrarAsistencia,
-    registrarAnotacion,
-    publicarComunicado,
-    registrarNota,
-    crearEvaluacion,
-} from '../services/api';
+import { getDashboardCurso, getAsignaturas, getEvaluaciones, registrarAsistencia, registrarAnotacion, publicarComunicado, registrarNota, crearEvaluacion, solicitarBoletin } from '../services/api';
 import '../css/DashboardDocente.css';
 
 const obtenerFechaHoy = () => new Date().toISOString().slice(0, 10);
@@ -314,6 +305,23 @@ function DashboardDocente() {
         }
     };
 
+        const pedirBoletin = async (estudiante) => {
+        setMensajeAccion({ tipo: '', texto: '' });
+        setAccionEnCurso(`boletin-${estudiante.id}`);
+
+        try {
+            await solicitarBoletin(estudiante.id);
+            setMensajeAccion({
+                tipo: 'ok',
+                texto: `Boletín de ${estudiante.nombre} ${estudiante.apellido} en cola: el apoderado verá el comunicado en unos segundos`
+            });
+        } catch (error) {
+            setMensajeAccion({ tipo: 'error', texto: error.message || 'No se pudo solicitar el boletín' });
+        } finally {
+            setAccionEnCurso('');
+        }
+    };
+
     return (
         <div className="docente-page">
             <NavBar nombreUsuario="Docente" />
@@ -414,6 +422,16 @@ function DashboardDocente() {
                                                             {accionEnCurso === `asistencia-${e.id}`
                                                                 ? 'Guardando...'
                                                                 : 'Guardar asistencia'}
+                                                        </button>
+
+                                                         <button
+                                                         type="button"
+                                                         className="docente-accion-btn"
+                                                         onClick={() => pedirBoletin(e)}
+                                                         disabled={accionEnCurso === `boletin-${e.id}`}
+                                                         
+                                                         >
+                                                            {accionEnCurso === `boletin-${e.id}` ? 'Solicitando...' : 'Generar boletín'}
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -717,15 +735,6 @@ function DashboardDocente() {
         </div>
     );
 
-    const [boletinMsg, setBoletinMsg] = useState('');
-    const pedirBoletin = async (estudianteId) => {
-        try {
-            await solicitarBoletin(estudianteId);
-            setBoletinMsg('Boletín en cola: el apoderado verá el comunicado en unos segundos.');
-        } catch (e) {
-            setBoletinMsg(e.message);
-        }
-    };
 }
 
 export default DashboardDocente;
