@@ -8,8 +8,8 @@ import {
     eliminarExchange,
     crearBinding,
     eliminarBinding,
-} from '../../services/api';
-import '../../css/RabbitAdminPanel.css';
+} from '../services/api';
+import '../css/RabbitAdminPanel.css';
 
 function Formulario({ titulo, campos, boton, onEnviar }) {
     const [valores, setValores] = useState({});

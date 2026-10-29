@@ -1,5 +1,5 @@
 import NavBar from '../components/NavBar';
-import RabbitAdminPanel from '../components/rabbit/RabbitAdminPanel';
+import RabbitAdminPanel from '../components/RabbitAdminPanel';
 
 function DashboardAdmin() {
     return (

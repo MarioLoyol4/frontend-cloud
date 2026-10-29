@@ -1,10 +1,15 @@
 import { msalInstance } from '../msalInstance';
 import { loginRequest } from '../authConfig';
 
-const BFF_URL = 'https://w6mqdm34tb.execute-api.us-east-1.amazonaws.com/v1';
+const BFF_URL = 'http://localhost:9090';
 const RABBIT_URL = `${BFF_URL}/api/bff/dashboard/rabbit`;
 
 export const obtenerRol = () => sessionStorage.getItem('rol');
+export const obtenerToken = () => sessionStorage.getItem('token');
+export const guardarToken = (token, rol) => {
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('rol', rol);
+};
 export const obtenerReferenciaId = () => sessionStorage.getItem('referenciaId');
 export const obtenerEstudiantesACargo = () => {
     const guardado = sessionStorage.getItem('estudiantesACargo');
@@ -21,28 +26,42 @@ export const obtenerAccessToken = async () => {
     try {
         const respuesta = await msalInstance.acquireTokenSilent({ ...loginRequest, account });
         return respuesta.accessToken;
-    } catch (error) {
+    } catch {
         await msalInstance.acquireTokenRedirect({ ...loginRequest, account });
         return null;
     }
 };
 
-const headers = async () => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${await obtenerAccessToken()}`,
-});
-
+const headers = async () => {
+    const token = obtenerToken() || await obtenerAccessToken();
+    return {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+    };
+};
 export const cerrarSesion = async () => {
+    sessionStorage.removeItem('token');
     sessionStorage.removeItem('rol');
     sessionStorage.removeItem('referenciaId');
     sessionStorage.removeItem('estudiantesACargo');
 
     const account = msalInstance.getActiveAccount();
-    await msalInstance.logoutRedirect({ account });
+    if (account) {
+        await msalInstance.logoutRedirect({ account });
+    }
 };
 
+export const login = async (rut, password) => {
+    const res = await fetch(`${BFF_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rut, password }),
+    });
+
+    return res.json();
+};
 export const sincronizarPerfil = async () => {
-    const res = await fetch(`${BFF_URL}/perfil`, {
+    const res = await fetch(`${BFF_URL}/api/bff/perfil`, {
         headers: await headers(),
     });
 
@@ -58,7 +77,7 @@ export const sincronizarPerfil = async () => {
 };
 
 export const getDashboardEstudiante = async (id) => {
-    const res = await fetch(`${BFF_URL}/estudiante/${id}`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/estudiante/${id}`, {
         headers: await headers(),
     });
 
@@ -66,7 +85,7 @@ export const getDashboardEstudiante = async (id) => {
 };
 
 export const getMiPerfil = async () => {
-    const res = await fetch(`${BFF_URL}/miperfil`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/miperfil`, {
         headers: await headers(),
     });
 
@@ -74,7 +93,7 @@ export const getMiPerfil = async () => {
 };
 
 export const getDashboardCurso = async (id) => {
-    const res = await fetch(`${BFF_URL}/curso/${id}`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/curso/${id}`, {
         headers: await headers(),
     });
 
@@ -82,7 +101,7 @@ export const getDashboardCurso = async (id) => {
 };
 
 export const getAsignaturas = async () => {
-    const res = await fetch(`${BFF_URL}/asignaturas`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/asignaturas`, {
         headers: await headers(),
     });
 
@@ -90,7 +109,7 @@ export const getAsignaturas = async () => {
 };
 
 export const getEvaluaciones = async () => {
-    const res = await fetch(`${BFF_URL}/evaluaciones`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/evaluaciones`, {
         headers: await headers(),
     });
 
@@ -98,7 +117,7 @@ export const getEvaluaciones = async () => {
 };
 
 export const registrarAsistencia = async (datos) => {
-    const res = await fetch(`${BFF_URL}/asistencias`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/asistencias`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos),
@@ -108,7 +127,7 @@ export const registrarAsistencia = async (datos) => {
 };
 
 export const registrarAnotacion = async (datos) => {
-    const res = await fetch(`${BFF_URL}/anotaciones`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/anotaciones`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos),
@@ -118,7 +137,7 @@ export const registrarAnotacion = async (datos) => {
 };
 
 export const publicarComunicado = async (datos) => {
-    const res = await fetch(`${BFF_URL}/comunicados`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/comunicados`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos),
@@ -128,7 +147,7 @@ export const publicarComunicado = async (datos) => {
 };
 
 export const crearEvaluacion = async (datos) => {
-    const res = await fetch(`${BFF_URL}/evaluaciones`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/evaluaciones`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos),
@@ -138,7 +157,7 @@ export const crearEvaluacion = async (datos) => {
 };
 
 export const registrarNota = async (datos) => {
-    const res = await fetch(`${BFF_URL}/notas`, {
+    const res = await fetch(`${BFF_URL}/api/bff/dashboard/notas`, {
         method: 'POST',
         headers: await headers(),
         body: JSON.stringify(datos),
