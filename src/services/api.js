@@ -217,3 +217,39 @@ export const solicitarBoletin = async (estudianteId) =>
             headers: await headers(),
         })
     );
+
+const KAFKA_URL = `${BFF_URL}/api/bff/kafka`;
+const kafka = async (metodo, ruta, cuerpo) => {
+    const res = await fetch(`${KAFKA_URL}${ruta}`, {
+        method: metodo,
+        headers: await headers(),
+        body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+    });
+    const texto = await res.text();
+    let datos = null;
+    if (texto) {
+        try {
+            datos = JSON.parse(texto);
+        } catch {
+            datos = { message: texto };
+        }
+    }
+    if (!res.ok) {
+        throw new Error(datos?.message || datos?.error || `Error
+
+${res.status}`);
+    }
+    return datos;
+};
+export const getTopicos = () => kafka('GET', '/topics');
+export const crearTopico = (datos) => kafka('POST', '/topics', datos);
+export const eliminarTopico = (nombre) => kafka('DELETE',
+    `/topics/${encodeURIComponent(nombre)}`);
+export const modificarConfigTopico = (nombre, datos) =>
+    kafka('PUT', `/topics/${encodeURIComponent(nombre)}/config`, datos);
+export const aumentarParticiones = (nombre, datos) =>
+    kafka('PUT', `/topics/${encodeURIComponent(nombre)}/partitions`, datos);
+export const getGruposConsumidores = () => kafka('GET', '/consumer-groups');
+
+export const getGrupoConsumidor = (id) => kafka('GET', `/consumer-
+groups/${encodeURIComponent(id)}`);

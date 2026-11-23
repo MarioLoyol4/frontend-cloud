@@ -1,4 +1,5 @@
 import NavBar from '../components/NavBar';
+import KafkaAdminPanel from '../components/KafkaAdminPanel';
 import RabbitAdminPanel from '../components/RabbitAdminPanel';
 
 function DashboardAdmin() {

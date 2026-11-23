@@ -1,0 +1,55 @@
+.kafka-panel {
+    margin-top: 24px;
+}
+
+.kafka-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.kafka-tabla th,
+.kafka-tabla td {
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.kafka-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.kafka-form h3 {
+    width: 100%;
+    margin: 0;
+}
+
+.kafka-aviso {
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.kafka-aviso.ok {
+    background: #e6f4ea;
+    color: #1e6b34;
+}
+
+.kafka-aviso.error {
+    background: #fdecea;
+    color: #a12622;
+}
+
+.kafka-grupos {
+    list-style: none;
+    padding: 0;
+}
+
+.kafka-detalle {
+    background: #f5f5f5;
+    padding: 8px;
+    border-radius: 4px;
+}
